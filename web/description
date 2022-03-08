@@ -1,4 +1,115 @@
-설명란
+주제 : Servlet & JSP
+목적 : Spring 및 Spring MVC Pattern을 공부하기에 앞서 Servlet을 선행해야할 것 같아 진행하기로 함.
+
+    1. 스터디 진행순서 설명
+        - 자바언어에 Servlet API이 더해지면 '자바 웹 프로그램'을 개발하게 된다.
+        - 하지만 서블릿만을 가지고 문서(html)를 출력하는데 비효율적이다.
+        - 이를 해결하기 위해 문서의 출력을 간편하게 해줄 수 있는 JSP를 활용한다.
+        - JSP로 문서출력에 대한 편의는 얻었지만 코드가 스파게티처럼 생기는 문제가 발생한다.
+        - 때문에 코드의 규칙을 가지는 JSP MVC 스터디를 진행한다.
+        - 위와 같이 진행순서는 Servlet -> JSP -> MVC으로 진행된다.
+        - 추가적으로 Spring MVC를 진행하도록 한다.
+
+    2. 웹 서버 프로그램이란?
+        개발하려는 '웹 서버 프로그램' 이란게 뭐야?
+
+        참고문헌
+            https://gdnn.tistory.com/113
+            https://velog.io/@ybnr_92/Web-%EC%9D%B4%EB%9E%80
+
+        - 과거에는 '프로그램'이란 이름하에 프로그램을 실행시켜 사용자의 로컬 컴퓨터로 프로그램을 돌려 입.출력의 결과를 받았다.
+        - 그 프로그램을 껍데기에 따라 윈도우 프로그램, 콘솔프로그램으로 나눠불렀고 사용자 컴퓨터 내에서 연산하고 DB로 콜해서 리스폰하는 방식이다.
+        - 시간이 지나 이 '프로그램'의 모습은 클라이언트(요청자,본사) 프로그램과 서버(제공자,지점)프로그램(db구조)으로 나뉘어졌다.
+        - 이때 클라이언트와 서버간 문제가 있었는데 그것은 동기화였다.
+        - 서버프로그램에 변경이 생기면 클라이언트 프로그램도 변경돼야 하는데 변경될때마다 클라이언트 쪽에 매번 재설치를 했어야 했다.(자동업데이트 기능은 없었음.)
+        - 이를 개선하기 위해 데이터를 주고받는 네트워크 기반의 방식이 생겼다.
+        - 그 방식에는 소켓, RPC 등이 존재했으나 맨땅에 데이터 전송구현을 개발해야하고 데이터 안전성에 대한 불안요소가 많았다.
+        - 이를 개선하기 위해 웹이라는걸 이용하게 되었는데 어째서 웹을 이용하게 하도록 했는가?
+        - 웹을 들여다보니 웹은 이미 브라우저라는게 있고 요청할 수 있는 환경을 가지고 있으며 요청에 대한 응답이 가능했다.
+        - 과거 클라이언트 프로그램과 서버프로그램으로 나뉘던 시대에 'CS프로그램'이라 해서 두 분류로 나눴지만 웹의 등장으로 클라이언트가 '페이지'를 요청하면
+        - 웹서버에서 데이터를 문서화하여 클라이언트가 요청한 페이지 내용을 문서화하여 리스폰해주면 브라우저에 출력되어 클라이언트 '프로그램'이 사라지게 되었다.
+        - 그래서 그 당시 '웹 개발자' 라고하면 대부분 '웹 서버프로그래머'라고 했다.
+        - 현재는 자바스크립트 등장으로 인해 '페이지'를 요청하지 않고 데이터를 요청하게 되면서 브라우저단에 자바스크립트를 이용해서 윈도우 프로그램을 만드는 시대가 도래했고,
+        - 클라이언트단을 웹의 프론트(Front), 서버쪽을 웹의 서버 단이라하여 백(Back)이라고 부르게 되었다.
+
+    3. 웹 서버프로그램과 Servlet
+        - 위의 내용에 이어 웹을 이용해서 프로그램을 만들면서 어떤 일이 발생하게 된다.
+        - 과거에는 단순히 웹에서 하던 일은 사용자가 회원목록(list)을 요청하면 회원목록을 찾아서 웹문서로 전달해줬다.
+        - 그런데 회원목록이라는 특성이 어제 혹은 1분전 누군가 가입을 했다면 웹서버를 통해 가지고 있는 정적인 웹문서는 무의미하다.
+        - 실시간으로 회원목록을 만들어내기 위해 웹문서로 저장되어있지 않고 코드형태로 있기 때문이다.
+        - 따라서 코드를 찾아 바로 클라이언트에 돌려주지 않고 해당 코드로 DB에서 회원목록을 문서화해서 돌려줘야 한다.
+        - 이를 위해 코드를 실행할 수 있는 환경이 추가적으로 필요했고 이러한 실행환경을 위해 등장한 것이 WAS(web application server) 이다.
+        - 이때 동적으로 문서를 만들기 위한 코드들을 Server Application 이라 한다.
+        - Server Application을 실행할 수 있게 해주는 환경에는 첫번째 웹서버, 두번째 코드를 찾아서 실행해주는 WAS가 필요하다.
+        - Servlet 명칭의 유래는 정확하지 않지만 이렇다고 생각한다.
+        - 사용자는 GET list / reg / edit / del 요청을 한다. 이런 요청은 각각 부분적으로 실행되고 수행이 완료되면 삭제된다.
+        - 이 요청의 구분을 조각내어 표현해서 SeverApplication Let(조각) 이라해서 Serv + Let = Servlet이라 불리운게 아닌가 한다.
+
+    4. Tomcat 설치 (Web server + WAS)
+
+
+        1. 스프링은 MVC를 지원한다.
+        2. 스프링이 mvc를 지원한다는 것이 무엇을 의미하는가?
+            - model 1 : controller 와 view 가 묶여있음
+            - model 2 : controller 와 view 가 분리되어있음.
+            **서블릿이 컨트롤러의 역할을 대신하는 것처럼 보이는데 그렇다고 서블릿과 컨트롤러가 동일한 것은 아님(추가확인필요)
+
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import java.io.*;
+
+public class Betoru extends HttpServlet {
+    // service는 약속된 메서드명이다.
+    // service 함수의 인자를 살펴보면 httpServletRequest와 HttpServletResponse 객체가 있고,
+    // 자료형을 살펴보면 Http를 이용한 Servlet을 만드는 Request 와 Response가 있음
+    // 일단 입력보단 출력을 해볼테니 response 가 가지고 있는 도구를 꺼내 사용해보겠다.
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        System.out.println("hello server print servlet");
+
+        // byte 등을 출력할 것이 아니고 문자열을 출력할 것이므로 printStream을 이용하자
+        OutputStream os = response.getOutputStream();
+        // 윈도우의 경우 버퍼가 8kb가 돼야 보내는데 그거 따지지말고 보내라(flush)는 의미의 true
+        PrintStream out = new PrintStream(os, true);
+        // 이것은 클라이언트에 보내는 문자열
+        out.println("Hello Client Servlet");
+
+        //하지만 영어가 아닌 외국어인 우리나라는 다국어로 취급하여
+        //Stream을 쓰지 않고 간단하게 Writer객체를 쓰도록 한다.
+        PrintWriter out = response.getWriter();
+        out.println("Hello Client Servlet");
+    }
+}
+
+//web.xml 매핑입력
+    <servlet>
+        <servlet-name>be</servlet-name>
+        <servlet-class>com.betoru.web.Betoru</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>be</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+
+//mapping info : web.xml
+//서블릿 2.x 에서 매핑정보는 web.xml 에서 매핑정보를 입력하는 방법밖에 없었다.
+//하지만 서블릿 3.0 이상으로 넘어오면서 2.x 버전에서의 방식과 어노테이션을 활용한 방식
+//모두를 사용할 수 있게되었다. 다만 여기서 주의할 점은
+//web.xml 의 root element 인 web-app 내 metadata-complete 값이 false 로 설정되어있어야한다.
+//metadata-complete 값의 의미는 web.xml 에 입력된 매핑정보가 전부인지 아니면 다른 곳에도
+//입력된 사항이 있는지 여부를 묻는 것이다. false라면 다른 곳에도 입력(어노테이션)되어있으니
+//찾아서 발견하면 매핑하라는 의미이다.
+
+//출력
+
+//사용자입력
+//요청에는 GET요청, POST요청이 있다.
+//기본적으로 사용자가 요청하는 것은 문서이다. http://localhost/hello (hello라는 문서를 줘)
+//http://localhost/hello?cnt=3(물음표 뒤에를 쿼리스트링이라고 한다. 문서를 요청하면서 추가적인 옵션을 질의할 수 있다.)
+//예를들어 햄버거가게에서 햄버거주세요. 추가로 양파빼고 라는 요청사항 같은 것.
+//정적인 문서를 주는 것이 아닌 추가적 요청에 의한 동적인 문서를 반환해주는 것.
+//1.GET
 
 1. 출력
 url 입력 후 페이지 출력
@@ -38,9 +149,20 @@ get 방식으로 요청을 했을 경우 파라미터(쿼리스트링)이 길어
     request parameter : 한글 -> character encoding : utf-8 -> -> response utf-8
 
 5. 서블릿필터
+클라이언트(사용자)로 부터 요청이 들어오면 WAS(Tomcat)가 적절한 소프트웨어를 실행하여
+해당 request에 대한 response를 보내게 된다.
+그 소프트웨어를 서블릿이라고하고 서버쪽에 있는 어플리케이션이니까 그 조각을
+실행하게 된다. 그럼 메모리상에 존재하게 될텐데 그 메모리상에 존재하는 공간을 서블릿 컨테이너라 하고
+WAS는 그 서블릿을 실행시켜서 컨테이너에 담아놓고 사용자에게 돌려주고 더이상 사용하지 않을때 삭제한다.
 
 웹서버 <-> WAS(Tomcat)   ---(request )-->  Servlet Container
                         <--(response )--
 
-서블릿 컨테이너에 인코딩을 적용하여 전체를 바꿔버리면 전체에 영향을 주니까
-request 와 servlet container 사이에 수문장(?)을 둬서
+서블릿 컨테이너에 인코딩을 적용하여 전체를 바꿔버리면(Server.xml) 
+전체에 영향을 주니까 좀 부담스러움
+그래서 request 와 servlet container 사이에 수문장(?)을 둬서
+접근권한 제어를 하던지, 실행을 하던지 제어할 수 있음.
+이 녀석을 필터(Servlet Filter)라고 함.
+
+웹서버 <-> WAS(Tomcat)   ---(request )-->   | |  -> Servlet Container
+                        <--(response )--    | |
